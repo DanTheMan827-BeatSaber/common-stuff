@@ -1,6 +1,6 @@
 #pragma once
 
-#include "paper/shared/logger.hpp"
+#include "beatsaber-hook/shared/utils/logging.hpp"
 
 /// @brief A logger, useful for printing debug messages
 /// @return
