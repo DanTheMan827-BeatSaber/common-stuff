@@ -1,3 +1,5 @@
+include_guard()
+
 function(process_dtm_includes)
   # Get the current directory
   get_filename_component(CURRENT_DIR "${CMAKE_CURRENT_LIST_DIR}" ABSOLUTE)
@@ -7,9 +9,7 @@ function(process_dtm_includes)
   
   # Include each .cmake file
   foreach(cmake_file IN LISTS cmake_files)
-      if(NOT cmake_file STREQUAL "${CMAKE_CURRENT_LIST_FILE}")
-          include(${cmake_file})
-      endif()
+    include(${cmake_file})
   endforeach()
 endfunction()
 
