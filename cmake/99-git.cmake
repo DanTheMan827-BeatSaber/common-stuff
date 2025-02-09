@@ -28,8 +28,6 @@ function(prepare_git_info)
         execute_process(COMMAND ${GIT_EXECUTABLE} describe --tags --abbrev=0 OUTPUT_VARIABLE GIT_TAG ERROR_QUIET)
         execute_process(COMMAND ${GIT_EXECUTABLE} describe --tags --exact --abbrev=0 OUTPUT_VARIABLE GIT_EXACT_TAG ERROR_QUIET)
 
-        execute_process(COMMAND ${GIT_EXECUTABLE} diff-index HEAD COMMAND_ECHO STDOUT ERROR_QUIET)
-
         if("$ENV{GITHUB_WORKFLOW_RUN}" STREQUAL "true")
             execute_process(COMMAND ${GIT_EXECUTABLE} diff-index --quiet HEAD -- :!qpm.json :!qpm.shared.json :!mod.template.json RESULT_VARIABLE GIT_MODIFIED ERROR_QUIET)
         else()
