@@ -1,7 +1,7 @@
 #pragma once
 
-#include <string>
 #include <cctype>
+#include <string>
 
 namespace Helpers {
     /**
@@ -13,7 +13,7 @@ namespace Helpers {
      * @param str The input string to be converted.
      * @return A new string with all characters in lowercase.
      */
-    inline std::string toLowercase(const std::string& str) {
+    inline std::string toLowercase(std::string const& str) {
         std::string result;
 
         for (char c : str) {

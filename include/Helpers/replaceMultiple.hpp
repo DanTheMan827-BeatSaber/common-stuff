@@ -23,13 +23,13 @@
  *        target substring (first) and a replacement substring (second).
  * @return A new string with all replacements applied.
  */
-inline std::string replaceMultiple(const std::string& str, const std::initializer_list<std::pair<std::string, std::string>>& replacements) {
+inline std::string replaceMultiple(std::string const& str, std::initializer_list<std::pair<std::string, std::string>> const& replacements) {
     std::string result;  // Resulting string after replacements
 
     // Loop through the string character by character
-    for (size_t i = 0; i < str.size(); ) {
+    for (size_t i = 0; i < str.size();) {
         // Iterate over replacement pairs
-        for (const auto& replacement : replacements) {
+        for (auto const& replacement : replacements) {
             size_t targetLength = replacement.first.length();
 
             // Check if target substring fits within the remaining string length
@@ -44,7 +44,7 @@ inline std::string replaceMultiple(const std::string& str, const std::initialize
         result += str[i];
         ++i;
 
-        character_loop_end:;
+    character_loop_end:;
     }
 
     return result;  // Return the newly constructed string with replacements
