@@ -5,19 +5,19 @@
 
 namespace Helpers {
     /**
-     * @brief Converts a given string to lowercase.
+     * @brief Converts a given string to upper case.
      *
      * This function takes a string as input and returns a new string
-     * where all the characters are converted to their lowercase equivalents.
+     * where all the characters are converted to their upper case equivalents.
      *
      * @param str The input string to be converted.
-     * @return A new string with all characters in lowercase.
+     * @return A new string with all characters in upper case.
      */
-    inline std::string toLowercase(std::string const& str) {
+    inline std::string toUpperCase(std::string const& str) {
         std::string result;
 
         for (char c : str) {
-            result += std::tolower(static_cast<unsigned char>(c));
+            result += std::toupper(static_cast<unsigned char>(c));
         }
 
         return result;
