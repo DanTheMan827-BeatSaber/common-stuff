@@ -104,4 +104,4 @@ namespace Helpers {
 
         return cachedVersion;
     }
-}
+}  // namespace Helpers

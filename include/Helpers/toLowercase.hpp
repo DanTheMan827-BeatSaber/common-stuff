@@ -22,4 +22,4 @@ namespace Helpers {
 
         return result;
     }
-}
+}  // namespace Helpers
