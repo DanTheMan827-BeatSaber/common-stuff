@@ -3,7 +3,9 @@
 #include <cctype>
 #include <string>
 
-namespace Helpers {
+#include "../../Concepts.hpp"
+
+namespace DanTheMan827::Helpers::String {
     /**
      * @brief Converts a given string to lower case.
      *
@@ -13,6 +15,7 @@ namespace Helpers {
      * @param str The input string to be converted.
      * @return A new string with all characters in lower case.
      */
+    template <Concepts::Void T = void>
     inline std::string toLowerCase(std::string const& str) {
         std::string result;
 
@@ -22,4 +25,4 @@ namespace Helpers {
 
         return result;
     }
-}  // namespace Helpers
+}  // namespace DanTheMan827::Helpers::String

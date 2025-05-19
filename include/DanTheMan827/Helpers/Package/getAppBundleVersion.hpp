@@ -1,11 +1,16 @@
 #include <jni.h>
 
+#include <concepts>
 #include <iostream>
 #include <string>
 
+#if __has_include("scotland2/shared/modloader.h")
 #include "scotland2/shared/modloader.h"
+#endif
 
-namespace Helpers {
+#include "../../Concepts.hpp"
+
+namespace DanTheMan827::Helpers::Package {
     /**
      * Retrieves the version of the current app bundle by using JNI to interact with the
      * Android application context, PackageManager, and PackageInfo.
@@ -21,7 +26,8 @@ namespace Helpers {
      *
      * @return std::string The version of the current app bundle.
      */
-    inline std::string getAppBundleVersion() {
+    template <Concepts::Void T = void, Concepts::Logger L>
+    inline std::string getAppBundleVersion(L& Logger) {
         static std::string cachedVersion;
 
         if (!cachedVersion.empty()) {
@@ -32,14 +38,14 @@ namespace Helpers {
         jint result = modloader_jvm->GetEnv(reinterpret_cast<void**>(&env), JNI_VERSION_1_6);
 
         if (result != JNI_OK) {
-            std::cerr << "Failed to get JNI environment!" << std::endl;
+            Logger.error("Failed to get JNI environment!");
             return "";
         }
 
         // Find the ActivityThread class
         jclass activityThreadClass = env->FindClass("android/app/ActivityThread");
         if (activityThreadClass == nullptr) {
-            std::cerr << "ActivityThread class not found!" << std::endl;
+            Logger.error("ActivityThread class not found!");
             return "";
         }
 
@@ -47,14 +53,14 @@ namespace Helpers {
         jclass globalActivityThreadClass = (jclass) env->NewGlobalRef(activityThreadClass);
         jmethodID currentApplicationMethod = env->GetStaticMethodID(globalActivityThreadClass, "currentApplication", "()Landroid/app/Application;");
         if (currentApplicationMethod == nullptr) {
-            std::cerr << "currentApplication method not found!" << std::endl;
+            Logger.error("currentApplication method not found!");
             return "";
         }
 
         // Get the application context
         jobject applicationContext = env->CallStaticObjectMethod(globalActivityThreadClass, currentApplicationMethod);
         if (applicationContext == nullptr) {
-            std::cerr << "Failed to get application context!" << std::endl;
+            Logger.error("Failed to get application context!");
             return "";
         }
 
@@ -63,7 +69,7 @@ namespace Helpers {
         jmethodID getPackageManagerMethod = env->GetMethodID(contextClass, "getPackageManager", "()Landroid/content/pm/PackageManager;");
         jobject packageManager = env->CallObjectMethod(applicationContext, getPackageManagerMethod);
         if (packageManager == nullptr) {
-            std::cerr << "Failed to get PackageManager!" << std::endl;
+            Logger.error("Failed to get PackageManager!");
             return "";
         }
 
@@ -71,7 +77,7 @@ namespace Helpers {
         jmethodID getPackageNameMethod = env->GetMethodID(contextClass, "getPackageName", "()Ljava/lang/String;");
         jstring packageName = (jstring) env->CallObjectMethod(applicationContext, getPackageNameMethod);
         if (packageName == nullptr) {
-            std::cerr << "Failed to get package name!" << std::endl;
+            Logger.error("Failed to get package name!");
             return "";
         }
 
@@ -81,7 +87,7 @@ namespace Helpers {
             env->GetMethodID(packageManagerClass, "getPackageInfo", "(Ljava/lang/String;I)Landroid/content/pm/PackageInfo;");
         jobject packageInfo = env->CallObjectMethod(packageManager, getPackageInfoMethod, packageName, 0);
         if (packageInfo == nullptr) {
-            std::cerr << "Failed to get PackageInfo!" << std::endl;
+            Logger.error("Failed to get PackageInfo!");
             return "";
         }
 
@@ -90,7 +96,7 @@ namespace Helpers {
         jfieldID versionNameField = env->GetFieldID(packageInfoClass, "versionName", "Ljava/lang/String;");
         jstring versionName = (jstring) env->GetObjectField(packageInfo, versionNameField);
         if (versionName == nullptr) {
-            std::cerr << "Failed to get version name!" << std::endl;
+            Logger.error("Failed to get version name!");
             return "";
         }
 
@@ -104,4 +110,4 @@ namespace Helpers {
 
         return cachedVersion;
     }
-}  // namespace Helpers
+}  // namespace DanTheMan827::Helpers::Package
