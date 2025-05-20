@@ -1,8 +1,10 @@
 #include <jni.h>
 
 #include <concepts>
+#include <cstddef>
 #include <iostream>
 #include <string>
+#include <type_traits>
 
 #if __has_include("scotland2/shared/modloader.h")
 #include "scotland2/shared/modloader.h"
@@ -26,8 +28,8 @@ namespace DanTheMan827::Helpers::Package {
      *
      * @return std::string The version of the current app bundle.
      */
-    template <Concepts::Void T = void, Concepts::Logger L>
-    inline std::string getAppBundleVersion(L& Logger) {
+    template <Concepts::Logger L = void>
+    inline std::string getAppBundleVersion(L* Logger = nullptr) {
         static std::string cachedVersion;
 
         if (!cachedVersion.empty()) {
@@ -38,14 +40,18 @@ namespace DanTheMan827::Helpers::Package {
         jint result = modloader_jvm->GetEnv(reinterpret_cast<void**>(&env), JNI_VERSION_1_6);
 
         if (result != JNI_OK) {
-            Logger.error("Failed to get JNI environment!");
+            if constexpr (!std::is_same<L, void>::value) {
+                Logger->error("Failed to get JNI environment!");
+            }
             return "";
         }
 
         // Find the ActivityThread class
         jclass activityThreadClass = env->FindClass("android/app/ActivityThread");
         if (activityThreadClass == nullptr) {
-            Logger.error("ActivityThread class not found!");
+            if constexpr (!std::is_same<L, void>::value) {
+                Logger->error("ActivityThread class not found!");
+            }
             return "";
         }
 
@@ -53,14 +59,18 @@ namespace DanTheMan827::Helpers::Package {
         jclass globalActivityThreadClass = (jclass) env->NewGlobalRef(activityThreadClass);
         jmethodID currentApplicationMethod = env->GetStaticMethodID(globalActivityThreadClass, "currentApplication", "()Landroid/app/Application;");
         if (currentApplicationMethod == nullptr) {
-            Logger.error("currentApplication method not found!");
+            if constexpr (!std::is_same<L, void>::value) {
+                Logger->error("currentApplication method not found!");
+            }
             return "";
         }
 
         // Get the application context
         jobject applicationContext = env->CallStaticObjectMethod(globalActivityThreadClass, currentApplicationMethod);
         if (applicationContext == nullptr) {
-            Logger.error("Failed to get application context!");
+            if constexpr (!std::is_same<L, void>::value) {
+                Logger->error("Failed to get application context!");
+            }
             return "";
         }
 
@@ -69,7 +79,9 @@ namespace DanTheMan827::Helpers::Package {
         jmethodID getPackageManagerMethod = env->GetMethodID(contextClass, "getPackageManager", "()Landroid/content/pm/PackageManager;");
         jobject packageManager = env->CallObjectMethod(applicationContext, getPackageManagerMethod);
         if (packageManager == nullptr) {
-            Logger.error("Failed to get PackageManager!");
+            if constexpr (!std::is_same<L, void>::value) {
+                Logger->error("Failed to get PackageManager!");
+            }
             return "";
         }
 
@@ -77,7 +89,9 @@ namespace DanTheMan827::Helpers::Package {
         jmethodID getPackageNameMethod = env->GetMethodID(contextClass, "getPackageName", "()Ljava/lang/String;");
         jstring packageName = (jstring) env->CallObjectMethod(applicationContext, getPackageNameMethod);
         if (packageName == nullptr) {
-            Logger.error("Failed to get package name!");
+            if constexpr (!std::is_same<L, void>::value) {
+                Logger->error("Failed to get package name!");
+            }
             return "";
         }
 
@@ -87,7 +101,9 @@ namespace DanTheMan827::Helpers::Package {
             env->GetMethodID(packageManagerClass, "getPackageInfo", "(Ljava/lang/String;I)Landroid/content/pm/PackageInfo;");
         jobject packageInfo = env->CallObjectMethod(packageManager, getPackageInfoMethod, packageName, 0);
         if (packageInfo == nullptr) {
-            Logger.error("Failed to get PackageInfo!");
+            if constexpr (!std::is_same<L, void>::value) {
+                Logger->error("Failed to get PackageInfo!");
+            }
             return "";
         }
 
@@ -96,7 +112,9 @@ namespace DanTheMan827::Helpers::Package {
         jfieldID versionNameField = env->GetFieldID(packageInfoClass, "versionName", "Ljava/lang/String;");
         jstring versionName = (jstring) env->GetObjectField(packageInfo, versionNameField);
         if (versionName == nullptr) {
-            Logger.error("Failed to get version name!");
+            if constexpr (!std::is_same<L, void>::value) {
+                Logger->error("Failed to get version name!");
+            }
             return "";
         }
 
