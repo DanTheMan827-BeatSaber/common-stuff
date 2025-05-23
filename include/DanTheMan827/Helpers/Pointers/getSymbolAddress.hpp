@@ -6,7 +6,7 @@
 
 namespace DanTheMan827::Helpers::Pointers {
     template <Concepts::Logger L = void>
-    static inline void* getSymbolAddress(char const* library_name, char const* symbol_name, L* Logger = nullptr) {
+    inline void* getSymbolAddress(char const* library_name, char const* symbol_name, L* Logger = nullptr) {
         auto library = dlopen(library_name, RTLD_NOW);
         if (!library) {
             if constexpr (!std::is_same<L, void>::value) {
